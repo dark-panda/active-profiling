@@ -1,0 +1,47 @@
+
+= ActiveProfiling
+
+ActiveProfiling is a gem I've slapped together over the years to help with
+profiling Rails applications. It is mostly aimed at profiling actions but
+can also be used to profile generic blocks of code. The two most basic
+
+ActiveProfiling wraps two profilers around ActionController actions via
++around_filters+ that can provide all sorts of information on your controller
+actions.
+
+== Profiler Filters
+
+=== +action_profiler+
+
+This filter wraps up the functionality of RubyProf for each action and can be
+used to spit out the results to +stdout+, your log file or to files in the
++Rails.root/log/profiling+ directory.
+
+Options and their defaults for +action_profiler+ are listed in
+ActiveProfiling::Railtie, but the gist of it is that you can basically use
+any of RubyProf's various options and control where the output is directed.
+For some the +:call_tree+ output type, results are written to individual files
+in +Rails.root/log/profiling+, while for all other output types the results
+are written to the Rails log. You can of course redirect all logging to
+files if you prefer, or to the standard output.
+
+=== +action_gc_profiler+
+
+This filter wraps up the functionality of either GC::Profiler in Ruby 1.9+ or
+the GC statistics patches available for 1.8.7 if installed, either through
+Ruby Enterprise Edition or by patching your own Ruby. When enabled, information
+on the Ruby garbage collector will be written to the Rails log at the end of
+each action response. Options for controlling how the information is collected
+and logged can be found in ActiveProfiling::Railtie.
+
+Note that the output for Ruby 1.9+ is a bit different from REE or a patched
+Ruby due to the manner in which they collect and report on GC statistics. In
+the REE patches you can access a number of options that aren't currently
+available in GC::Profiler. I've tried to make some sensible output for REE,
+but there are going to be differences based solely on the manner in which the
+statistics are collected.
+
+== License
+
+This gem is licensed under an MIT-style license. See the +MIT-LICENSE+ file for
+details.
