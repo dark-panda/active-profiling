@@ -14,7 +14,7 @@ module ActiveProfiling
     # * :disable_gc - temporarily disable the garbage collector for the
     #   duration of the profiling session. The default is false.
     def ruby_profiler(options = {})
-      return yield unless defined?(RubyProf)
+      return [ yield, nil ] unless defined?(RubyProf)
 
       options = {
         :measure_mode => RubyProf::PROCESS_TIME,
