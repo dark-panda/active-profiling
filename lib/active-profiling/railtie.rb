@@ -35,7 +35,9 @@ module ActiveProfiling
 
       # The ruby-prof printer to use. See the ruby-prof docs for details.
       # The default is RubyProf::FlatPrinter. Use Symbols in this option,
-      # i.e. :flat instead of RubyProf::FlatPrinter.
+      # i.e. :flat instead of RubyProf::FlatPrinter. (Note that the
+      # FlatPrinterWithLineNumbers printer is called :flat_with_line_numbers
+      # here.)
       :profiler_printer => :graph,
 
       # Where to direct the output from the profiler. If set to :stdout,

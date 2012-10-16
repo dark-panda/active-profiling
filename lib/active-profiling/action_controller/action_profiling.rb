@@ -23,7 +23,12 @@ module ActionController
 
       return yield if !profiling_config.profiler_enabled || !ActiveProfiling.ruby_prof?
 
-      printer_class = RubyProf.const_get("#{profiling_config.profiler_printer.to_s.camelize}Printer")
+      printer_class = case profiling_config.profiler_printer
+        when :flat_with_line_numbers
+          RubyProf::FlatPrinterWithLineNumbers
+        else
+          RubyProf.const_get("#{profiling_config.profiler_printer.to_s.camelize}Printer")
+      end
 
       output = if profiling_config.profiler_output
         profiling_config.profiler_output
