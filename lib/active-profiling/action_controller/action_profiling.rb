@@ -62,33 +62,35 @@ module ActionController
           time = Time.now.strftime('%Y-%m-%d-%H:%M:%S')
           hash = Digest::MD5.hexdigest(rand.to_s)[0..6]
           path = Rails.root.join('log/profiling', self.class.name.underscore)
-
-          FileUtils.mkdir_p(path)
-
-          file_name = if profiling_config.profiler_printer == :call_tree
-            path.join([
-              'callgrind.out',
-              self.action_name,
-              profiling_config.profiler_measure_mode,
-              profiling_config.profiler_printer,
-              time,
-              hash
-            ].join('.'))
-          else
-            path.join([
-              self.action_name,
-              profiling_config.profiler_measure_mode,
-              profiling_config.profiler_printer,
-              time,
-              hash,
-              profiling_config.profiler_printer == :graph_html ? 'html' : 'log'
-            ].join('.'))
+          ext = case profiling_config.profiler_printer
+            when :graph_html, :call_stack
+              'html'
+            when :dot
+              'dot'
+            else
+              'log'
           end
+
+          file_name = [
+            self.action_name,
+            profiling_config.profiler_measure_mode,
+            profiling_config.profiler_printer,
+            time,
+            hash,
+            ext
+          ].join('.')
+
+          if profiling_config.profiler_printer == :call_tree && !profiling_config.profiler_call_tree_prefix.blank?
+            file_name = "#{profiling_config.profiler_call_tree_prefix}#{file_name}"
+          end
+
+          file_name = path.join(file_name)
 
           ActiveSupport::Notifications.instrument('profiler_output_to_file.active_profiling', {
             :file_name => file_name
           })
 
+          FileUtils.mkdir_p(path)
           printer_class.new(profiler_result).print(File.open(file_name, 'w'), profiling_config.profiler_printer_options)
       end
 

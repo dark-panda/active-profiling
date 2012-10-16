@@ -40,6 +40,11 @@ module ActiveProfiling
       # here.)
       :profiler_printer => :graph,
 
+      # The prefix to use for :call_tree files. Some programs like to look
+      # for files named "callgrind.out.*", while others like to look for
+      # "cachegrind.out.*".
+      :profiler_call_tree_prefix => 'callgrind.out.',
+
       # Where to direct the output from the profiler. If set to :stdout,
       # well, then it's sent to $stdout. When set to :log, it shows up in
       # the log file. When set to :file, it gets put in log/profiling/ in a
