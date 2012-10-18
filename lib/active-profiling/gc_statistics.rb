@@ -17,7 +17,6 @@ module ActiveProfiling
 
         if options[:disable_gc]
           GC.enable
-          GC.start
         end
 
         result = GC::Profiler.result
@@ -71,13 +70,10 @@ module ActiveProfiling
     #
     # Options:
     #
-    # * :disable_gc - disables garbage collection for the duration of the
-    #   block and then renables it immediately afterwards and runs GC.start.
-    #   This ensures that GC is run at least once for the block so that you
-    #   can see what the block itself is doing. If you want to leave GC
-    #   running on its own without any interference, set this value to false.
-    #   The default value is false.
-    # * :title - a title to use for logging.
+    # * +:disable_gc+ - disables garbage collection for the duration of the
+    #   block and then renables it immediately afterwards. This allows you to
+    #   control when GC is run and see the results.
+    # * +:title+ - a title to use for logging.
     #
     # More options for this method can be found in the default settings,
     # located in ActiveProfiling::Railtie::DEFAULT_GC_STATISTICS_OPTIONS.
