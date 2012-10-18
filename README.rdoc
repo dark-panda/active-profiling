@@ -3,13 +3,9 @@
 
 ActiveProfiling is a gem I've slapped together over the years to help with
 profiling Rails applications. It is mostly aimed at profiling actions but
-can also be used to profile generic blocks of code. The two most basic
+can also be used to profile generic blocks of code.
 
-ActiveProfiling wraps two profilers around ActionController actions via
-+around_filters+ that can provide all sorts of information on your controller
-actions.
-
-== Profiler Filters
+== Profiler ActionController Filters
 
 === +action_profiler+
 
@@ -18,12 +14,16 @@ used to spit out the results to +stdout+, your log file or to files in the
 +Rails.root/log/profiling+ directory.
 
 Options and their defaults for +action_profiler+ are listed in
-ActiveProfiling::Railtie, but the gist of it is that you can basically use
-any of RubyProf's various options and control where the output is directed.
-For some the +:call_tree+ output type, results are written to individual files
-in +Rails.root/log/profiling+, while for all other output types the results
-are written to the Rails log. You can of course redirect all logging to
-files if you prefer, or to the standard output.
+ActiveProfiling::Railtie::DEFAULT_PROFILER_OPTIONS, but the gist of it is that
+you can basically use any of RubyProf's various options and control where the
+output is directed. For some the +:call_tree+ output type, results are written
+to individual files in +Rails.root/log/profiling+, while for all other output
+types the results are written to the Rails log. You can of course redirect
+all logging to files if you prefer, or to the standard output.
+
+To enable this filter, add the following to your application configuration:
+
+  config.active_profiling.profiler.enabled = true
 
 === +action_gc_statistics+
 
@@ -32,7 +32,7 @@ the GC statistics patches available for 1.8.7 if installed, either through
 Ruby Enterprise Edition or by patching your own Ruby. When enabled, information
 on the Ruby garbage collector will be written to the Rails log at the end of
 each action response. Options for controlling how the information is collected
-and logged can be found in ActiveProfiling::Railtie.
+and logged can be found in ActiveProfiling::Railtie::DEFAULT_GC_STATISTICS_OPTIONS.
 
 Note that the output for Ruby 1.9+ is a bit different from REE or a patched
 Ruby due to the manner in which they collect and report on GC statistics. In
@@ -40,6 +40,83 @@ the REE patches you can access a number of options that aren't currently
 available in GC::Profiler. I've tried to make some sensible output for REE,
 but there are going to be differences based solely on the manner in which the
 statistics are collected.
+
+To enable this filter, add the following to your application configuration:
+
+  config.active_profiling.gc_statistics.enabled = true
+
+== Profiling Blocks
+
+You can also profile individual blocks of code by using the
+ActiveProfiling.ruby_profiler and ActiveProfiling.gc_statistics methods or
+by including the ActiveProfiling::RubyProfiler or ActiveProfiling::GCStatistics
+modules and using the methods in your own classes and modules. In both cases,
+these methods take the same options as found in the ActionController filters
+minus the +:enabled+ option.
+
+  # Will spit out the GC statistics if GC is run, same as with the action
+  # filter.
+  ActiveProfiling.gc_statistics do
+    # ...
+  end
+
+  # Wraps the block in a RubyProf session and logs the results accordingly.
+  ActiveProfiling.ruby_profiler(options) do
+    # ...
+  end
+
+== Using In A Rails Project
+
+Profiling should be performed in a production environment, as profiling in
+development really isn't reflective of how your application is actually going
+to be running in the Real World. At the same time, you don't necessarily want
+to clutter up your application settings and +Gemfile+ with unnecessary code
+and have to worry about accidentally committing profiling settings to your
+source code repository and the like.
+
+A semi-neat trick to try is to set up a file for local application settings
+thusly:
+
+First, add the following to your +application.rb+. You generally want this near
+the end of the file.
+
+  if File.exists?("#{Rails.root}/config/application_local.rb")
+    require "#{Rails.root}/config/application_local.rb"
+  end
+
+Add an entry for +application_local.rb+ to your +.gitignore+ file or otherwise
+ignore it with your SCM.
+
+In +application_local.rb+, you can set up additional application settings
+like so:
+
+  Bundler.require(:profiling, Rails.env) if defined?(Bundler)
+
+  module FooBarApp
+    class Application < Rails::Application
+      # config.log_level = :debug
+      config.active_profiling.profiler.enabled = false
+      config.active_profiling.profiler.output = :file
+      config.active_profiling.profiler.printer = :graph_html
+      config.active_profiling.profiler.printer_options = {
+        :min_percent => 1,
+        :print_file => true
+      }
+      config.active_profiling.gc_statistics.enabled = true
+
+      # etc...
+    end
+  end
+
+This allows you to tweak some settings without affecting your main
++application.rb+ file.
+
+You'll also want to add the following to your +Gemfile+:
+
+  group :profiling do
+    gem 'active-profiling'
+    gem 'ruby-prof'
+  end
 
 == License
 
