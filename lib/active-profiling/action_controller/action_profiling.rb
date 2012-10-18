@@ -13,7 +13,7 @@ module ActionController
         Rails.application.config.active_profiling.profiler.enabled && ActiveProfiling.ruby_prof?
       }
 
-      around_filter :action_gc_profiler, :if => proc {
+      around_filter :action_gc_statistics, :if => proc {
         Rails.application.config.active_profiling.gc_statistics.enabled && ActiveProfiling.gc_statistics?
       }
     end
@@ -24,7 +24,7 @@ module ActionController
       end
     end
 
-    def action_gc_profiler(*args)
+    def action_gc_statistics(*args)
       gc_statistics do
         yield
       end

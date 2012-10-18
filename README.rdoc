@@ -25,7 +25,7 @@ in +Rails.root/log/profiling+, while for all other output types the results
 are written to the Rails log. You can of course redirect all logging to
 files if you prefer, or to the standard output.
 
-=== +action_gc_profiler+
+=== +action_gc_statistics+
 
 This filter wraps up the functionality of either GC::Profiler in Ruby 1.9+ or
 the GC statistics patches available for 1.8.7 if installed, either through
