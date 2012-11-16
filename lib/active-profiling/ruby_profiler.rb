@@ -49,7 +49,8 @@ module ActiveProfiling
           str.rewind
 
           ActiveSupport::Notifications.instrument('profiler_output.active_profiling', {
-            :profiler_output => str.read
+            :profiler_output => str.read,
+            :title => options[:title] || args.first
           })
         when :file
           path, file_name = if args.first

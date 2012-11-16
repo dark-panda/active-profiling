@@ -6,10 +6,11 @@ module ActiveProfiling
         logger.send("#{config.profiler.log_level}?")
 
       report = self.indent(event.payload[:profiler_output])
+      title = event.payload[:title]
 
       logger.send(
         config.profiler.log_level,
-        "#{color("Profiler Output", YELLOW, true)}\n#{report}"
+        "#{color("Profiler Output: #{title}", YELLOW, true)}\n#{report}"
       )
     end
 
