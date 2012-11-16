@@ -90,19 +90,24 @@ ignore it with your SCM.
 In +application_local.rb+, you can set up additional application settings
 like so:
 
+  # You can now flip this line on and off to enable or disable
+  # ActiveProfiling.
   Bundler.require(:profiling, Rails.env) if defined?(Bundler)
 
   module FooBarApp
     class Application < Rails::Application
       # config.log_level = :debug
-      config.active_profiling.profiler.enabled = false
-      config.active_profiling.profiler.output = :file
-      config.active_profiling.profiler.printer = :graph_html
-      config.active_profiling.profiler.printer_options = {
-        :min_percent => 1,
-        :print_file => true
-      }
-      config.active_profiling.gc_statistics.enabled = true
+
+      if defined?(ActiveProfiling)
+        config.active_profiling.profiler.enabled = false
+        config.active_profiling.profiler.output = :file
+        config.active_profiling.profiler.printer = :graph_html
+        config.active_profiling.profiler.printer_options = {
+          :min_percent => 1,
+          :print_file => true
+        }
+        config.active_profiling.gc_statistics.enabled = true
+      end
 
       # etc...
     end
