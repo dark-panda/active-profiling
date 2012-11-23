@@ -12,3 +12,4 @@ doc/
 *.rbc
 .rbx
 Gemfile.lock
+Gemfile.local
