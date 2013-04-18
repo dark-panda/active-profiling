@@ -1,5 +1,5 @@
 
-module ActiveProfiling
+module ActiveProfiling::ActionController
   class LogSubscriber < ActiveSupport::LogSubscriber
     def profiler_output(event)
       return unless logger &&
@@ -56,4 +56,4 @@ module ActiveProfiling
   end
 end
 
-ActiveProfiling::LogSubscriber.attach_to :active_profiling
+ActiveProfiling::ActionController::LogSubscriber.attach_to :active_profiling

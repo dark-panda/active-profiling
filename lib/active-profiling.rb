@@ -20,7 +20,7 @@ module ActiveProfiling
 end
 
 require 'active-profiling/railtie'
-require 'active-profiling/log_subscriber'
 require 'active-profiling/gc_statistics'
 require 'active-profiling/ruby_profiler'
-require 'active-profiling/action_controller/action_profiling'
+require 'active-profiling/action_controller'
+
