@@ -23,4 +23,5 @@ require 'active-profiling/railtie'
 require 'active-profiling/gc_statistics'
 require 'active-profiling/ruby_profiler'
 require 'active-profiling/action_controller'
+require 'active-profiling/active_record'
 

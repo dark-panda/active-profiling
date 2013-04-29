@@ -2,8 +2,7 @@
 = ActiveProfiling
 
 ActiveProfiling is a gem I've slapped together over the years to help with
-profiling Rails applications. It is mostly aimed at profiling actions but
-can also be used to profile generic blocks of code.
+profiling Rails applications.
 
 == Profiler ActionController Filters
 
@@ -65,6 +64,23 @@ minus the +:enabled+ option.
     # ...
   end
 
+
+== Extended ActiveRecord Logging
+
+The database can often be a performance hotspot, and tracking down where and
+why some queries are occuring in your application can be a pain.
+ActiveProfiling includes an extended query logger that can be configured
+to log backtraces for SQL queries that can help you track down where
+unexpected queries are occuring in your code.
+
+To enable extended logging, add the following to your application
+configuration:
+
+  config.active_profiling.active_record.backtrace_logger.enabled = true
+
+Additional configuration options can be found in the documentation for
+ActiveProfiling::Railtie.
+
 == Using In A Rails Project
 
 Profiling should be performed in a production environment, as profiling in
@@ -107,6 +123,8 @@ like so:
           :print_file => true
         }
         config.active_profiling.gc_statistics.enabled = true
+
+        config.active_profiling.active_record.backtrace_logger.enabled = true
       end
 
       # etc...

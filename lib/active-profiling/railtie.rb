@@ -84,15 +84,40 @@ module ActiveProfiling
       :log_level => :info
     }.freeze
 
+    # These settings are the default values used for the ActiveRecord
+    # backtrace logger.
+    #
+    # * +:enabled+ - Enables backtrace logging of SQL queries so you can see
+    #   where your queries originate.
+    # * +:verbose+ - Logs all backtrace lines. Normally we have a +:matcher+
+    #   option that you can use to filter out lines you want to log, but this
+    #   is a quick method to bypass that matching completely.
+    # * +:log_level+ - The log level to use when logging SQL backtraces.
+    # * +:matcher+ - A Regexp that is used to match caller lines in the
+    #   backtraces being logged. By default, this is set to
+    #   /^#{Rails.root}(?!(\/vendor\/rails|\/\.bundle))/ so that only lines
+    #   in your application code are logged.
+    DEFAULT_AR_BACKTRACE_LOGGER_OPTIONS = {
+      :enabled => false,
+
+      :verbose => false,
+
+      :log_level => :debug
+    }.freeze
+
     config.active_profiling = ActiveSupport::OrderedOptions.new
     config.active_profiling.profiler = ActiveSupport::OrderedOptions.new
     config.active_profiling.gc_statistics = ActiveSupport::OrderedOptions.new
+    config.active_profiling.active_record = ActiveSupport::OrderedOptions.new
+    config.active_profiling.active_record.backtrace_logger = ActiveSupport::OrderedOptions.new
 
     initializer "active_profiling.set_profiling_config" do |app|
       options = app.config.active_profiling
 
       options.profiler.reverse_merge!(DEFAULT_PROFILER_OPTIONS)
       options.gc_statistics.reverse_merge!(DEFAULT_GC_STATISTICS_OPTIONS)
+      options.active_record.backtrace_logger.reverse_merge!(DEFAULT_AR_BACKTRACE_LOGGER_OPTIONS)
+      options.active_record.backtrace_logger[:matcher] ||= /^#{Rails.root}(?!(\/vendor\/rails|\/\.bundle))/
     end
   end
 end
