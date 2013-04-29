@@ -24,6 +24,9 @@ To enable this filter, add the following to your application configuration:
 
   config.active_profiling.profiler.enabled = true
 
+Additional configuration options can be found in the documentation for
+ActiveProfiling::Railtie.
+
 === +action_gc_statistics+
 
 This filter wraps up the functionality of either GC::Profiler in Ruby 1.9+ or
@@ -43,6 +46,9 @@ statistics are collected.
 To enable this filter, add the following to your application configuration:
 
   config.active_profiling.gc_statistics.enabled = true
+
+Additional configuration options can be found in the documentation for
+ActiveProfiling::Railtie.
 
 == Profiling Blocks
 
