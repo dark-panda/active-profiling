@@ -36,8 +36,13 @@ module ActiveProfiling
       GC.disable if options[:disable_gc]
 
       result = nil
+      exception = nil
       profiler_result = RubyProf.profile do
-        result = yield
+        begin
+          result = yield
+        rescue
+          exception = $!
+        end
       end
 
       case output
@@ -94,7 +99,11 @@ module ActiveProfiling
           printer_class.new(profiler_result).print(File.open(file_name, 'w'), options[:printer_options])
       end
 
-      result
+      if exception
+        raise exception
+      else
+        result
+      end
     ensure
       GC.enable if options[:disable_gc]
     end
