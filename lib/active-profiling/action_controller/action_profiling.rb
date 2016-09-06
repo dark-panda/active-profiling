@@ -1,6 +1,4 @@
 
-require 'digest/md5'
-
 module ActionController
   module ActionProfiling
     extend ActiveSupport::Concern
@@ -19,7 +17,7 @@ module ActionController
     end
 
     def action_profiler(*args)
-      ruby_profiler do
+      ruby_profiler(:name => "#{controller_name}.#{action_name}") do
         yield
       end
     end
