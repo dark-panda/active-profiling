@@ -7,11 +7,17 @@ module ActionController
       include ActiveProfiling::RubyProfiler
       include ActiveProfiling::GCStatistics
 
-      around_filter :action_profiler, :if => proc {
+      around_filter_method = if ActionController::Base.respond_to?(:around_action)
+        :around_action
+      else
+        :around_filter
+      end
+
+      send around_filter_method, :action_profiler, :if => proc {
         Rails.application.config.active_profiling.profiler.enabled && ActiveProfiling.ruby_prof?
       }
 
-      around_filter :action_gc_statistics, :if => proc {
+      send around_filter_method, :action_gc_statistics, :if => proc {
         Rails.application.config.active_profiling.gc_statistics.enabled && ActiveProfiling.gc_statistics?
       }
     end
