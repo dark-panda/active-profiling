@@ -1,4 +1,4 @@
 
 module ActiveProfiling
-  VERSION = "0.1.1.dev"
+  VERSION = '0.1.1.dev'.freeze
 end
