@@ -69,7 +69,7 @@ module ActiveProfiling
         if @path.present?
           { path: File.dirname(@path), file_name: @path }
         elsif @options[:file_name]
-          { path: File.dirname(options[:file_name]), file_name: @options[:file_name] }
+          { path: File.dirname(@options[:file_name]), file_name: @options[:file_name] }
         else
           time = Time.now.strftime('%Y-%m-%d-%H:%M:%S')
           hash = Digest::MD5.hexdigest(rand.to_s)[0..6]
