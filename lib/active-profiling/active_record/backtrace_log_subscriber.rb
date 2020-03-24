@@ -2,7 +2,8 @@
 module ActiveProfiling::ActiveRecord
   class BacktraceLogSubscriber < ::ActiveSupport::LogSubscriber
     def sql(event)
-      return unless config.log_level &&
+      return unless config.enabled &&
+        config.log_level &&
         logger &&
         logger.send("#{config.log_level}?")
 
