@@ -1,33 +1,36 @@
+# frozen_string_literal: true
 
 module ActiveProfiling::ActiveRecord
   class BacktraceLogSubscriber < ::ActiveSupport::LogSubscriber
     def sql(event)
-      return unless config.enabled &&
-        config.log_level &&
-        logger &&
-        logger.send("#{config.log_level}?")
+      return unless skip_backtrace?
 
       payload = event.payload
 
-      return if 'SCHEMA' == payload[:name]
+      return if payload[:name] == 'SCHEMA'
 
       backtrace = event.send(:caller).collect { |line|
-        if line_match(line)
-          "    #{line}"
-        end
+        "    #{line}" if line_match(line)
       }.compact
 
-      unless backtrace.empty?
-        name = color(payload[:name], YELLOW, true)
-        logger.send(config.log_level, "  #{name}\n#{backtrace.join("\n")}")
-      end
+      return if backtrace.empty?
+
+      name = color(payload[:name], YELLOW, true)
+      logger.send(config.log_level, "  #{name}\n#{backtrace.join("\n")}")
     end
 
     def logger
       ::ActiveRecord::Base.logger
     end
 
-    protected
+    private
+
+      def skip_backtrace?
+        config.enabled &&
+          config.log_level &&
+          logger&.send("#{config.log_level}?")
+      end
+
       def config
         Rails.application.config.active_profiling.active_record.backtrace_logger
       end
@@ -39,4 +42,3 @@ module ActiveProfiling::ActiveRecord
 end
 
 ActiveProfiling::ActiveRecord::BacktraceLogSubscriber.attach_to :active_record
-

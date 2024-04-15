@@ -1,12 +1,11 @@
+# frozen_string_literal: true
 
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
 gemspec
 
-gem "rdoc", "~> 3.12"
-gem "rake", "~> 10.0"
+gem 'rake'
+gem 'rdoc'
+gem 'rubocop', require: false
 
-if File.exists?('Gemfile.local')
-  instance_eval File.read('Gemfile.local')
-end
-
+instance_eval File.read('Gemfile.local') if File.exist?('Gemfile.local')

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module ActiveProfiling
   module GCStatistics
@@ -6,7 +7,7 @@ module ActiveProfiling
     if defined?(GC::Profiler)
       def gc_statistics_report(options = {})
         options = {
-          :disable_gc => false
+          disable_gc: false
         }.merge(options)
 
         GC.disable if options[:disable_gc]
@@ -15,14 +16,11 @@ module ActiveProfiling
 
         retval = yield
 
-        if options[:disable_gc]
-          GC.enable
-        end
+        GC.enable if options[:disable_gc]
 
         result = GC::Profiler.result
 
-        return [ retval, result ]
-
+        [retval, result]
       ensure
         GC.enable if options[:disable_gc]
         GC::Profiler.disable
@@ -31,7 +29,7 @@ module ActiveProfiling
     elsif GC.respond_to?(:enable_stats)
       def gc_statistics_report(options = {})
         options = {
-          :disable_gc => false
+          disable_gc: false
         }.merge(options)
 
         GC.disable if options[:disable_gc]
@@ -47,18 +45,17 @@ module ActiveProfiling
           "Time (ms): #{GC.time / 1000.0}"
         ].join("\n")
 
-        return [ retval, result ]
-
+        [retval, result]
       ensure
         GC.enable if options[:disable_gc]
         GC.disable_stats
         GC.clear_stats
       end
     else
-      $stderr.puts "NOTICE: this version of Ruby cannot report on GC statistics."
+      $stderr.warn 'NOTICE: this version of Ruby cannot report on GC statistics.'
 
-      def gc_statistics_report(*args)
-        [ yield, nil ]
+      def gc_statistics_report(*)
+        [yield, nil]
       end
     end
 
@@ -85,21 +82,19 @@ module ActiveProfiling
     # with the GC statistics patch found here:
     #
     # http://blog.pluron.com/2008/02/memory-profilin.html
-    def gc_statistics(*args)
+    def gc_statistics(*args, &block)
       options = Rails.application.config.active_profiling.gc_statistics.merge(args.extract_options!)
 
-      result, gc_report = gc_statistics_report(options) do
-        yield
-      end
+      result, gc_report = gc_statistics_report(options, &block)
 
       ActiveSupport::Notifications.instrument('gc_statistics.active_profiling', {
-        :report => gc_report,
-        :title => options[:title] || args.first
+        report: gc_report,
+        title: options[:title] || args.first
       })
 
       result
     end
   end
 
-  self.extend(GCStatistics)
+  extend(GCStatistics)
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module ActiveProfiling
   class << self
@@ -24,4 +25,3 @@ require 'active-profiling/gc_statistics'
 require 'active-profiling/ruby_profiler'
 require 'active-profiling/action_controller'
 require 'active-profiling/active_record'
-

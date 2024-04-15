@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'active-profiling/ruby_profiler/output'
 
@@ -16,5 +17,5 @@ module ActiveProfiling
     end
   end
 
-  self.extend(RubyProfiler)
+  extend(RubyProfiler)
 end

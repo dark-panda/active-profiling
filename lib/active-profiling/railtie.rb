@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module ActiveProfiling
   class Railtie < Rails::Railtie
@@ -43,23 +44,23 @@ module ActiveProfiling
     #       :print_file => true
     #     }
     DEFAULT_PROFILER_OPTIONS = {
-      :enabled => false,
+      enabled: false,
 
-      :measure_mode => :process_time,
+      measure_mode: :process_time,
 
-      :disable_gc => true,
+      disable_gc: true,
 
-      :printer => :graph,
+      printer: :graph,
 
-      :call_tree_prefix => 'callgrind.out.',
+      call_tree_prefix: 'callgrind.out.',
 
-      :output => nil,
+      output: nil,
 
-      :log_level => :info,
+      log_level: :info,
 
-      :printer_options => {
-        :min_percent => 1,
-        :print_file => true
+      printer_options: {
+        min_percent: 1,
+        print_file: true
       }
     }.freeze
 
@@ -77,11 +78,11 @@ module ActiveProfiling
     #   whenever you need to and see results as you go.
     # * +:log_level+ - The log level to spit the GC statistics to.
     DEFAULT_GC_STATISTICS_OPTIONS = {
-      :enabled => false,
+      enabled: false,
 
-      :disable_gc => false,
+      disable_gc: false,
 
-      :log_level => :info
+      log_level: :info
     }.freeze
 
     # These settings are the default values used for the ActiveRecord
@@ -98,11 +99,11 @@ module ActiveProfiling
     #   /^#{Rails.root}(?!(\/vendor\/rails|\/\.bundle))/ so that only lines
     #   in your application code are logged.
     DEFAULT_AR_BACKTRACE_LOGGER_OPTIONS = {
-      :enabled => false,
+      enabled: false,
 
-      :verbose => false,
+      verbose: false,
 
-      :log_level => :debug
+      log_level: :debug
     }.freeze
 
     config.active_profiling = ActiveSupport::OrderedOptions.new
@@ -111,13 +112,13 @@ module ActiveProfiling
     config.active_profiling.active_record = ActiveSupport::OrderedOptions.new
     config.active_profiling.active_record.backtrace_logger = ActiveSupport::OrderedOptions.new
 
-    initializer "active_profiling.set_profiling_config" do |app|
+    initializer 'active_profiling.set_profiling_config' do |app|
       options = app.config.active_profiling
 
       options.profiler.reverse_merge!(DEFAULT_PROFILER_OPTIONS)
       options.gc_statistics.reverse_merge!(DEFAULT_GC_STATISTICS_OPTIONS)
       options.active_record.backtrace_logger.reverse_merge!(DEFAULT_AR_BACKTRACE_LOGGER_OPTIONS)
-      options.active_record.backtrace_logger[:matcher] ||= /^#{Rails.root}(?!(\/vendor\/rails|\/\.bundle))/
+      options.active_record.backtrace_logger[:matcher] ||= %r{#{Rails.root}(?!(/vendor/rails|/\.bundle))}
     end
   end
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module ActionController
   module ActionProfiling
@@ -13,25 +14,21 @@ module ActionController
         :around_filter
       end
 
-      send around_filter_method, :action_profiler, :if => proc {
+      send around_filter_method, :action_profiler, if: proc {
         Rails.application.config.active_profiling.profiler.enabled && ActiveProfiling.ruby_prof?
       }
 
-      send around_filter_method, :action_gc_statistics, :if => proc {
+      send around_filter_method, :action_gc_statistics, if: proc {
         Rails.application.config.active_profiling.gc_statistics.enabled && ActiveProfiling.gc_statistics?
       }
     end
 
-    def action_profiler(*args)
-      ruby_profiler(:name => "#{controller_name}.#{action_name}") do
-        yield
-      end
+    def action_profiler(*, &block)
+      ruby_profiler(name: "#{controller_name}.#{action_name}", &block)
     end
 
-    def action_gc_statistics(*args)
-      gc_statistics do
-        yield
-      end
+    def action_gc_statistics(*, &block)
+      gc_statistics(&block)
     end
   end
 
