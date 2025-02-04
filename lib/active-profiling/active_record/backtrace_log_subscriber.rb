@@ -15,7 +15,7 @@ module ActiveProfiling::ActiveRecord
 
       return if backtrace.empty?
 
-      name = color(payload[:name], YELLOW, true)
+      name = color(payload[:name], YELLOW, bold: true)
       logger.send(config.log_level, "  #{name}\n#{backtrace.join("\n")}")
     end
 
